@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mqnoy/movie-rest-api/config"
 	"github.com/mqnoy/movie-rest-api/handler"
+	"github.com/mqnoy/movie-rest-api/middleware"
 
 	_movieHttpDelivery "github.com/mqnoy/movie-rest-api/movie/delivery/http"
 	_movieRepoMysql "github.com/mqnoy/movie-rest-api/movie/repository/mysql"
@@ -30,6 +31,7 @@ func main() {
 	api := g.Group("/api")
 
 	// middleware setup
+	api.Use(middleware.Logger())
 	api.Use(gin.Recovery())
 
 	// health check route
