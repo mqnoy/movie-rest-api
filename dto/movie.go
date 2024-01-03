@@ -24,3 +24,7 @@ type MovieCreateParam struct {
 type MovieDetailParam struct {
 	ID int `uri:"id" binding:"required"`
 }
+
+type FilterMovieParams struct {
+	Title string
+}

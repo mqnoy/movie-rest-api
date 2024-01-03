@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mqnoy/movie-rest-api/domain"
@@ -9,6 +10,7 @@ import (
 	"github.com/mqnoy/movie-rest-api/handler"
 	"github.com/mqnoy/movie-rest-api/pkg/cerror"
 	"github.com/mqnoy/movie-rest-api/pkg/cvalidator"
+	"github.com/mqnoy/movie-rest-api/util"
 )
 
 type movieHandler struct {
@@ -77,8 +79,31 @@ func (h *movieHandler) GetDetailMovie(ctx *gin.Context) {
 }
 
 func (h *movieHandler) GetListMovie(ctx *gin.Context) {
-	// TODO: function delete movie
-	// TODO: call useCase listMovie
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
+	offset, _ := strconv.Atoi(ctx.DefaultQuery("offset", "0"))
+	title := util.ParseQueryToString(ctx.Query("title"))
+	orders := util.ParseQueryToString(ctx.DefaultQuery("orders", "title asc"))
+
+	params := dto.ListParam[dto.FilterMovieParams]{
+		Filters: dto.FilterMovieParams{
+			Title: title,
+		},
+		Orders: orders,
+		Pagination: dto.Pagination{
+			Page:   page,
+			Limit:  limit,
+			Offset: offset,
+		},
+	}
+
+	result, err := h.movieUseCase.ListMovies(ctx, params)
+	if err != nil {
+		handler.ParseToErrorMsg(ctx, err.StatusCode, err.Err)
+		return
+	}
+
+	handler.ParseResponse(ctx, "Successfully", result, nil)
 }
 
 func (h *movieHandler) PatchUpdateMovie(ctx *gin.Context) {

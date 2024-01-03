@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -86,4 +87,42 @@ func (u *movieUseCase) DetailMovie(ctx *gin.Context, param dto.MovieDetailParam)
 	}
 
 	return u.ParseMovieResponse(row), nil
+}
+
+func (u *movieUseCase) ListMovies(ctx *gin.Context, param dto.ListParam[dto.FilterMovieParams]) (*dto.ListResponse[dto.Movie], *cerror.CustomError) {
+	pagination := param.Pagination
+	param.Pagination.Offset = (pagination.Page - 1) * pagination.Limit
+
+	rows, err := u.movieRepo.SelectAndCountUnit(param)
+	if err != nil {
+		logger.Error().
+			Err(err).
+			Str("context", "usecase.movie").
+			Send()
+
+		return nil, cerror.WrapError(500, fmt.Errorf("internal server error"))
+	}
+
+	totalItems := rows.Count
+	// Create pagination metadata
+	totalPages := int(math.Ceil(float64(totalItems) / float64(pagination.Limit)))
+
+	return &dto.ListResponse[dto.Movie]{
+		Rows: u.ParseMovieListResponse(rows.Rows),
+		MetaData: dto.Pagination{
+			Page:       pagination.Page,
+			Limit:      pagination.Limit,
+			TotalPages: totalPages,
+			TotalItems: totalItems,
+		},
+	}, nil
+}
+
+func (u *movieUseCase) ParseMovieListResponse(m []*model.Movie) []*dto.Movie {
+	result := make([]*dto.Movie, len(m))
+	for idx, el := range m {
+		result[idx] = u.ParseMovieResponse(el)
+	}
+
+	return result
 }
