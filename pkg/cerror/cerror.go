@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	ErrCantBeEmpty = errors.New("cant be empty")
-	ErrRequiredId  = errors.New("required id")
+	ErrCantBeEmpty      = errors.New("cant be empty")
+	ErrRequiredId       = errors.New("required id")
+	ErrResourceNotFound = errors.New("resource not found")
 )
 
 type CustomError struct {

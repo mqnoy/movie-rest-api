@@ -113,7 +113,20 @@ func (h *movieHandler) PatchUpdateMovie(ctx *gin.Context) {
 }
 
 func (h *movieHandler) DeleteMovie(ctx *gin.Context) {
-	// TODO: function delete movie
-	// TODO: validate param id
-	// TODO: call useCase deleteMovie
+	var req dto.MovieDetailParam
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		handler.ParseResponse(ctx, "", nil, cerror.WrapError(http.StatusBadRequest, cerror.ErrRequiredId))
+		return
+	}
+
+	param := dto.MovieDetailParam{
+		ID: req.ID,
+	}
+
+	if err := h.movieUseCase.RemoveMovie(ctx, param); err != nil {
+		handler.ParseToErrorMsg(ctx, err.StatusCode, err.Err)
+		return
+	}
+
+	handler.ParseResponse(ctx, "Successfully", nil, nil)
 }
