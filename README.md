@@ -47,5 +47,14 @@ $ go get
 
 ### Library that i use
 - [Viper](https://github.com/spf13/viper) - for handle configuration
-- [GORM](https://github.com/go-gorm/gorm) - Orm for golang
+- [GORM](https://github.com/go-gorm/gorm) - Orm for golang with [mysql driver](gorm.io/driver/mysql)
 - [gin-gonic](https://github.com/gin-gonic/gin) - http server (routing, middleware) 
+- [validator](https://pkg.go.dev/github.com/go-playground/validator/v10@v10.16.0) - validator tag based
+- [zerolog](https://pkg.go.dev/github.com/rs/zerolog@v1.31.0) - logging
+
+
+### TODO 
+- [ ] Support with unit test and mocking
+
+### Contributor
+- [Rifky](https://github.com/mqnoy/)
