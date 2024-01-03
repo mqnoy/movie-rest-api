@@ -10,9 +10,11 @@ import (
 type MovieUseCase interface {
 	CreateMovie(ctx *gin.Context, param dto.MovieCreateParam) (*dto.Movie, *cerror.CustomError)
 	DetailMovie(ctx *gin.Context, param dto.MovieDetailParam) (*dto.Movie, *cerror.CustomError)
+	ListMovies(ctx *gin.Context, param dto.ListParam[dto.FilterMovieParams]) (*dto.ListResponse[dto.Movie], *cerror.CustomError)
 }
 
 type MovieRepository interface {
 	InsertMovie(row model.Movie) (*model.Movie, error)
 	SelectMovieById(id int) (*model.Movie, error)
+	SelectAndCountUnit(param dto.ListParam[dto.FilterMovieParams]) (*dto.SelectAndCount[model.Movie], error)
 }
