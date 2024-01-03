@@ -8,3 +8,15 @@ type Movie struct {
 	Image       string  `json:"image"`
 	Timestamp
 }
+
+type MovieCreatePayload struct {
+	Title       string  `json:"title" validate:"required"`
+	Description string  `json:"description" validate:"required"`
+	Rating      float32 `json:"rating" validate:"required,numeric,min=0,max=1"`
+	Image       string  `json:"image" validate:"required"`
+	Timestamp
+}
+
+type MovieCreateParam struct {
+	Payload MovieCreatePayload
+}

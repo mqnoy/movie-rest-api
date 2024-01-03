@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"github.com/mqnoy/movie-rest-api/domain"
+	"github.com/mqnoy/movie-rest-api/model"
 	"gorm.io/gorm"
 )
 
@@ -15,4 +16,8 @@ func New(db *gorm.DB) domain.MovieRepository {
 	}
 }
 
-// TODO: implement movie repository
+func (m mysqlMovieRepository) InsertMovie(row model.Movie) (*model.Movie, error) {
+	err := m.DB.Create(&row).Error
+
+	return &row, err
+}
