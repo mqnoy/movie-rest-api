@@ -16,3 +16,27 @@ func ParseTimestampResponse(m model.TimestampColumn) Timestamp {
 		UpdatedAt: util.DateToEpoch(m.UpdatedAt),
 	}
 }
+
+type Pagination struct {
+	Page       int   `json:"page"`
+	Limit      int   `json:"limit"`
+	TotalPages int   `json:"total_pages"`
+	TotalItems int64 `json:"total_items"`
+	Offset     int   `json:",omitempty"`
+}
+
+type ListParam[T any] struct {
+	Filters    T
+	Orders     string
+	Pagination Pagination
+}
+
+type ListResponse[T any] struct {
+	Rows     []*T       `json:"rows"`
+	MetaData Pagination `json:"meta_data"`
+}
+
+type SelectAndCount[M any] struct {
+	Rows  []*M
+	Count int64
+}
