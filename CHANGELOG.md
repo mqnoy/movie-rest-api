@@ -1,4 +1,7 @@
 
+# v0.2.0
+- feat(movie): Add movie detail API
+
 # v0.1.0
 - fix(migration): Adjustment table name regarding model name
 - build: Add dependencies validator and zerolog
