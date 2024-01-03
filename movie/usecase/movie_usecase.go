@@ -68,7 +68,7 @@ func (u *movieUseCase) fetchMovie(ctx *gin.Context, id int) (*model.Movie, *cerr
 	row, err := u.movieRepo.SelectMovieById(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, cerror.WrapError(404, cerror.ErrCantBeEmpty)
+			return nil, cerror.WrapError(404, cerror.ErrResourceNotFound)
 		}
 
 		logger.Error().
@@ -125,4 +125,24 @@ func (u *movieUseCase) ParseMovieListResponse(m []*model.Movie) []*dto.Movie {
 	}
 
 	return result
+}
+
+func (u *movieUseCase) RemoveMovie(ctx *gin.Context, param dto.MovieDetailParam) *cerror.CustomError {
+	// validate resource is exists
+	row, err := u.fetchMovie(ctx, param.ID)
+	if err != nil {
+		return err
+	}
+
+	// persist delete movie
+	if err := u.movieRepo.DeleteMovieById(row.ID); err != nil {
+		logger.Error().
+			Err(err).
+			Str("context", "usecase.movie").
+			Send()
+
+		return cerror.WrapError(500, fmt.Errorf("internal server error"))
+	}
+
+	return nil
 }

@@ -80,3 +80,8 @@ func (m mysqlMovieRepository) SelectAndCountUnit(param dto.ListParam[dto.FilterM
 		Count: count,
 	}, nil
 }
+
+func (m mysqlMovieRepository) DeleteMovieById(id int) error {
+	result := m.DB.Delete(&model.Movie{}, id)
+	return result.Error
+}
