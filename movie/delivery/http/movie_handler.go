@@ -1,8 +1,14 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/mqnoy/movie-rest-api/domain"
+	"github.com/mqnoy/movie-rest-api/dto"
+	"github.com/mqnoy/movie-rest-api/handler"
+	"github.com/mqnoy/movie-rest-api/pkg/cerror"
+	"github.com/mqnoy/movie-rest-api/pkg/cvalidator"
 )
 
 type movieHandler struct {
@@ -26,9 +32,28 @@ func New(g *gin.RouterGroup, movieUseCase domain.MovieUseCase) {
 }
 
 func (h *movieHandler) PostCreateMovie(ctx *gin.Context) {
-	// TODO: function create movie
-	// TODO: validate payload
-	// TODO: call useCase createMovie
+	var payload dto.MovieCreatePayload
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		handler.ParseResponse(ctx, "", nil, cerror.WrapError(http.StatusBadRequest, err))
+		return
+	}
+
+	if err := cvalidator.Validator.Struct(&payload); err != nil {
+		handler.ParseResponse(ctx, "", nil, cerror.WrapError(http.StatusBadRequest, err))
+		return
+	}
+
+	param := dto.MovieCreateParam{
+		Payload: payload,
+	}
+
+	result, err := h.movieUseCase.CreateMovie(ctx, param)
+	if err != nil {
+		handler.ParseToErrorMsg(ctx, err.StatusCode, err.Err)
+		return
+	}
+
+	handler.ParseResponse(ctx, "Create movie successfully", result, nil)
 }
 
 func (h *movieHandler) GetDetailMovie(ctx *gin.Context) {
