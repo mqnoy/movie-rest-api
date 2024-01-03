@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/mqnoy/movie-rest-api/model"
 	"github.com/mqnoy/movie-rest-api/pkg/cerror"
 	"github.com/mqnoy/movie-rest-api/pkg/logger"
+	"gorm.io/gorm"
 )
 
 type movieUseCase struct {
@@ -59,4 +61,29 @@ func (u *movieUseCase) ParseMovieResponse(m *model.Movie) *dto.Movie {
 		Image:       m.Image,
 		Timestamp:   dto.ParseTimestampResponse(m.TimestampColumn),
 	}
+}
+
+func (u *movieUseCase) fetchMovie(ctx *gin.Context, id int) (*model.Movie, *cerror.CustomError) {
+	row, err := u.movieRepo.SelectMovieById(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, cerror.WrapError(404, cerror.ErrCantBeEmpty)
+		}
+
+		logger.Error().
+			Err(err).
+			Str("context", "usecase.movie").
+			Send()
+		return nil, cerror.WrapError(500, fmt.Errorf("internal server error"))
+	}
+	return row, nil
+}
+
+func (u *movieUseCase) DetailMovie(ctx *gin.Context, param dto.MovieDetailParam) (*dto.Movie, *cerror.CustomError) {
+	row, err := u.fetchMovie(ctx, param.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return u.ParseMovieResponse(row), nil
 }

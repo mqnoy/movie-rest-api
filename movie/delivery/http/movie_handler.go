@@ -57,9 +57,23 @@ func (h *movieHandler) PostCreateMovie(ctx *gin.Context) {
 }
 
 func (h *movieHandler) GetDetailMovie(ctx *gin.Context) {
-	// TODO: function delete movie
-	// TODO: validate param id
-	// TODO: call useCase detailMovie
+	var req dto.MovieDetailParam
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		handler.ParseResponse(ctx, "", nil, cerror.WrapError(http.StatusBadRequest, cerror.ErrRequiredId))
+		return
+	}
+
+	param := dto.MovieDetailParam{
+		ID: req.ID,
+	}
+
+	result, err := h.movieUseCase.DetailMovie(ctx, param)
+	if err != nil {
+		handler.ParseToErrorMsg(ctx, err.StatusCode, err.Err)
+		return
+	}
+
+	handler.ParseResponse(ctx, "Get detail movie Successfully", result, nil)
 }
 
 func (h *movieHandler) GetListMovie(ctx *gin.Context) {

@@ -7,6 +7,7 @@ import (
 
 var (
 	ErrCantBeEmpty = errors.New("cant be empty")
+	ErrRequiredId  = errors.New("required id")
 )
 
 type CustomError struct {
