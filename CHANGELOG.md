@@ -1,4 +1,7 @@
 
+# v0.5.0
+- feat(movie): Add Update movie API
+
 # v0.4.0
 - feat(movie): Add Delete movie API
 
