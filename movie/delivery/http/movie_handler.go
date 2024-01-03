@@ -107,9 +107,35 @@ func (h *movieHandler) GetListMovie(ctx *gin.Context) {
 }
 
 func (h *movieHandler) PatchUpdateMovie(ctx *gin.Context) {
-	// TODO: function update movie
-	// TODO: validate payload
-	// TODO: call useCase updateMovie
+	var req dto.MovieDetailParam
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		handler.ParseResponse(ctx, "", nil, cerror.WrapError(http.StatusBadRequest, cerror.ErrRequiredId))
+		return
+	}
+
+	var payload dto.MovieUpdatePayload
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		handler.ParseResponse(ctx, "", nil, cerror.WrapError(http.StatusBadRequest, err))
+		return
+	}
+
+	if err := cvalidator.Validator.Struct(&payload); err != nil {
+		handler.ParseResponse(ctx, "", nil, cerror.WrapError(http.StatusBadRequest, err))
+		return
+	}
+
+	payload.ID = req.ID
+	param := dto.MovieUpdateParam{
+		Payload: payload,
+	}
+
+	result, err := h.movieUseCase.UpdateMovie(ctx, param)
+	if err != nil {
+		handler.ParseToErrorMsg(ctx, err.StatusCode, err.Err)
+		return
+	}
+
+	handler.ParseResponse(ctx, "Update movie successfully", result, nil)
 }
 
 func (h *movieHandler) DeleteMovie(ctx *gin.Context) {

@@ -146,3 +146,51 @@ func (u *movieUseCase) RemoveMovie(ctx *gin.Context, param dto.MovieDetailParam)
 
 	return nil
 }
+
+func (u *movieUseCase) UpdateMovie(ctx *gin.Context, param dto.MovieUpdateParam) (*dto.Movie, *cerror.CustomError) {
+	// validate resource is exists
+	id := param.Payload.ID
+	updateValue := param.Payload
+
+	row, err := u.fetchMovie(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	values := map[string]interface{}{}
+	if updateValue.Title != "" {
+		values["title"] = updateValue.Title
+	}
+
+	if updateValue.Description != "" {
+		values["description"] = updateValue.Description
+	}
+
+	rating := updateValue.Rating
+	if rating != nil {
+		values["rating"] = *updateValue.Rating
+	}
+
+	if updateValue.Image != "" {
+		values["image"] = updateValue.Image
+	}
+
+	// persist update
+	if err := u.movieRepo.UpdateMovieById(row.ID, values); err != nil {
+
+		logger.Error().
+			Err(err).
+			Str("context", "usecase.movie").
+			Send()
+
+		return nil, cerror.WrapError(500, fmt.Errorf("internal server error"))
+	}
+
+	// select updated row
+	updatedRow, err := u.fetchMovie(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return u.ParseMovieResponse(updatedRow), nil
+}

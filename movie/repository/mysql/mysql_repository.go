@@ -85,3 +85,8 @@ func (m mysqlMovieRepository) DeleteMovieById(id int) error {
 	result := m.DB.Delete(&model.Movie{}, id)
 	return result.Error
 }
+
+func (m mysqlMovieRepository) UpdateMovieById(id int, values interface{}) error {
+	result := m.DB.Model(model.Movie{}).Where("id = ?", id).Updates(values).Error
+	return result
+}
