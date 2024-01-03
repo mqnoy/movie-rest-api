@@ -1,4 +1,4 @@
-CREATE TABLE `tbl_movie` (
+CREATE TABLE `movie` (
     `id` bigint NOT NULL AUTO_INCREMENT,
     `title` varchar(255) DEFAULT "",
     `description` longtext DEFAULT "",
