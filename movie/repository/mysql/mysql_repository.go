@@ -21,3 +21,12 @@ func (m mysqlMovieRepository) InsertMovie(row model.Movie) (*model.Movie, error)
 
 	return &row, err
 }
+
+func (m mysqlMovieRepository) SelectMovieById(id int) (*model.Movie, error) {
+	var row *model.Movie
+	if err := m.DB.Where("id = ?", id).First(&row).Error; err != nil {
+		return nil, err
+	}
+
+	return row, nil
+}

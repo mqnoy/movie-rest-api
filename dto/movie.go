@@ -20,3 +20,7 @@ type MovieCreatePayload struct {
 type MovieCreateParam struct {
 	Payload MovieCreatePayload
 }
+
+type MovieDetailParam struct {
+	ID int `uri:"id" binding:"required"`
+}
