@@ -1,4 +1,7 @@
 
+# v0.4.0
+- feat(movie): Add Delete movie API
+
 # v0.3.0
 - feat(util): Add parse query functions
 - feat(dto): Add support pagination rows
