@@ -56,5 +56,10 @@ $ go get
 ### TODO 
 - [ ] Support with unit test and mocking
 
+
+### Postman Collection
+- [collection](https://www.postman.com/imzalab-preview/workspace/team-workspace/collection/32128861-c016ebcf-1779-44c8-a71d-eacae78bef9b?action=share&creator=32128861)
+
+
 ### Contributor
 - [Rifky](https://github.com/mqnoy/)
